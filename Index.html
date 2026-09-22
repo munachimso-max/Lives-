@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webcam Mask Overlay</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Webcam Overlay App</h1>
+    
+    <div class="controls">
+      <input type="file" id="imageInput" accept="image/*">
+      <button id="startCamBtn">Start Camera</button>
+    </div>
+
+    <div class="video-wrapper">
+      <video id="webcam" autoplay playsinline></video>
+      <img id="overlayImage" src="" alt="Overlay Face" style="display: none;">
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f0f2f5;
+}
+
+.container {
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 640px;
+  height: 480px;
+  margin: 0 auto;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#webcam {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#overlayImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+const webcam = document.getElementById('webcam');
+const startCamBtn = document.getElementById('startCamBtn');
+const imageInput = document.getElementById('imageInput');
+const overlayImage = document.getElementById('overlayImage');
+
+// Handle image upload preview
+imageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      overlayImage.src = event.target.result;
+      overlayImage.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Start webcam stream
+startCamBtn.addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    webcam.srcObject = stream;
+  } catch (err) {
+    alert("Could not access the camera. Please check permissions.");
+    console.error(err);
+  }
+});
